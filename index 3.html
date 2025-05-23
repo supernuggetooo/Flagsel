@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flagsel</title>
+</head>
+<body>
+  <h1>Flagsel</h1>
+  <label for="playerName">Player Name:</label>
+  <input id="playerName" type="text" placeholder="Enter name" />
+  <button id="startButton">Start Game</button>
+
+  <div id="game" style="display:none;">
+    <p id="feedback"></p>
+    <p id="score">Score: 0</p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const startButton = document.getElementById("startButton");
+      const playerNameInput = document.getElementById("playerName");
+      const gameDiv = document.getElementById("game");
+      const feedback = document.getElementById("feedback");
+      const scoreDisplay = document.getElementById("score");
+
+      startButton.addEventListener("click", () => {
+        const name = playerNameInput.value.trim();
+        if (!name) {
+          feedback.textContent = "Please enter a name to start the game.";
+          return;
+        }
+        feedback.textContent = `Welcome, ${name}! Get ready to play.`;
+        gameDiv.style.display = "block";
+        scoreDisplay.textContent = "Score: 0";
+      });
+    });
+  </script>
+</body>
+</html>
