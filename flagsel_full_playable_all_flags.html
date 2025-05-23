@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flagsel - All Countries</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #f8f8f8; padding: 20px; }
+    input, button { font-size: 18px; padding: 10px; margin: 10px; }
+    #flag img { width: 250px; height: auto; }
+    #game, #leaderboard, #playerscore { margin-top: 20px; }
+    table { margin: 0 auto; border-collapse: collapse; }
+    th, td { padding: 10px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>Flagsel - All Country Flags</h1>
+  <label for="player">Player Name:</label>
+  <input id="player" type="text" placeholder="Enter your name" />
+  <button id="start">Start Game</button>
+
+  <div id="game" style="display:none;">
+    <div id="flag"><img src="" alt="Flag" /></div>
+    <input id="guess" type="text" placeholder="Guess the country code (e.g., US, FR)" />
+    <button id="submit">Submit</button>
+    <p id="feedback"></p>
+    <p id="score">Score: 0</p>
+    <p id="timer">Time left: 30s</p>
+  </div>
+
+  <div id="playerscore">
+    <h2>Multiplayer Scores</h2>
+    <ul id="scores"></ul>
+  </div>
+
+  <div id="leaderboard">
+    <h2>Leaderboard</h2>
+    <table>
+      <thead><tr><th>Rank</th><th>Score</th></tr></thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const flags = [
+      { country: "AF", image: "https://flagcdn.com/af.svg" },
+      { country: "AL", image: "https://flagcdn.com/al.svg" },
+      { country: "DZ", image: "https://flagcdn.com/dz.svg" },
+      { country: "AS", image: "https://flagcdn.com/as.svg" },
+      { country: "AD", image: "https://flagcdn.com/ad.svg" },
+      { country: "AO", image: "https://flagcdn.com/ao.svg" },
+      { country: "AI", image: "https://flagcdn.com/ai.svg" },
+      { country: "AQ", image: "https://flagcdn.com/aq.svg" },
+      { country: "AG", image: "https://flagcdn.com/ag.svg" },
+      { country: "AR", image: "https://flagcdn.com/ar.svg" },
+      { country: "AM", image: "https://flagcdn.com/am.svg" },
+      { country: "AW", image: "https://flagcdn.com/aw.svg" },
+      { country: "AU", image: "https://flagcdn.com/au.svg" },
+      { country: "AT", image: "https://flagcdn.com/at.svg" },
+      { country: "AZ", image: "https://flagcdn.com/az.svg" },
+      { country: "BS", image: "https://flagcdn.com/bs.svg" },
+      { country: "BH", image: "https://flagcdn.com/bh.svg" },
+      { country: "BD", image: "https://flagcdn.com/bd.svg" },
+      { country: "BB", image: "https://flagcdn.com/bb.svg" },
+      { country: "BY", image: "https://flagcdn.com/by.svg" },
+      { country: "BE", image: "https://flagcdn.com/be.svg" },
+      { country: "BZ", image: "https://flagcdn.com/bz.svg" },
+      { country: "BJ", image: "https://flagcdn.com/bj.svg" },
+      { country: "BM", image: "https://flagcdn.com/bm.svg" },
+      { country: "BT", image: "https://flagcdn.com/bt.svg" },
+      { country: "BO", image: "https://flagcdn.com/bo.svg" },
+      { country: "BA", image: "https://flagcdn.com/ba.svg" },
+      { country: "BW", image: "https://flagcdn.com/bw.svg" },
+      { country: "BR", image: "https://flagcdn.com/br.svg" },
+      { country: "BN", image: "https://flagcdn.com/bn.svg" },
+      { country: "BG", image: "https://flagcdn.com/bg.svg" },
+      { country: "BF", image: "https://flagcdn.com/bf.svg" },
+      { country: "BI", image: "https://flagcdn.com/bi.svg" },
+      { country: "KH", image: "https://flagcdn.com/kh.svg" },
+      { country: "CM", image: "https://flagcdn.com/cm.svg" },
+      { country: "CA", image: "https://flagcdn.com/ca.svg" },
+      { country: "CV", image: "https://flagcdn.com/cv.svg" },
+      { country: "CF", image: "https://flagcdn.com/cf.svg" },
+      { country: "TD", image: "https://flagcdn.com/td.svg" },
+      { country: "CL", image: "https://flagcdn.com/cl.svg" },
+      { country: "CN", image: "https://flagcdn.com/cn.svg" },
+      { country: "CO", image: "https://flagcdn.com/co.svg" },
+      { country: "KM", image: "https://flagcdn.com/km.svg" },
+      { country: "CG", image: "https://flagcdn.com/cg.svg" },
+      { country: "CD", image: "https://flagcdn.com/cd.svg" },
+      { country: "CR", image: "https://flagcdn.com/cr.svg" },
+      { country: "HR", image: "https://flagcdn.com/hr.svg" },
+      { country: "CU", image: "https://flagcdn.com/cu.svg" },
+      { country: "CY", image: "https://flagcdn.com/cy.svg" },
+      { country: "CZ", image: "https://flagcdn.com/cz.svg" },
+      { country: "DK", image: "https://flagcdn.com/dk.svg" },
+      { country: "DJ", image: "https://flagcdn.com/dj.svg" },
+      { country: "DM", image: "https://flagcdn.com/dm.svg" },
+      { country: "DO", image: "https://flagcdn.com/do.svg" },
+      { country: "EC", image: "https://flagcdn.com/ec.svg" },
+      { country: "EG", image: "https://flagcdn.com/eg.svg" },
+      { country: "SV", image: "https://flagcdn.com/sv.svg" },
+      { country: "GQ", image: "https://flagcdn.com/gq.svg" },
+      { country: "ER", image: "https://flagcdn.com/er.svg" },
+      { country: "EE", image: "https://flagcdn.com/ee.svg" },
+      { country: "ET", image: "https://flagcdn.com/et.svg" },
+      { country: "FJ", image: "https://flagcdn.com/fj.svg" },
+      { country: "FI", image: "https://flagcdn.com/fi.svg" },
+      { country: "FR", image: "https://flagcdn.com/fr.svg" },
+      { country: "GA", image: "https://flagcdn.com/ga.svg" },
+      { country: "GM", image: "https://flagcdn.com/gm.svg" },
+      { country: "GE", image: "https://flagcdn.com/ge.svg" },
+      { country: "DE", image: "https://flagcdn.com/de.svg" },
+      { country: "GH", image: "https://flagcdn.com/gh.svg" },
+      { country: "GR", image: "https://flagcdn.com/gr.svg" },
+      { country: "GD", image: "https://flagcdn.com/gd.svg" },
+      { country: "GT", image: "https://flagcdn.com/gt.svg" },
+      { country: "GN", image: "https://flagcdn.com/gn.svg" },
+      { country: "GW", image: "https://flagcdn.com/gw.svg" },
+      { country: "GY", image: "https://flagcdn.com/gy.svg" },
+      { country: "HT", image: "https://flagcdn.com/ht.svg" },
+      { country: "HN", image: "https://flagcdn.com/hn.svg" },
+      { country: "HU", image: "https://flagcdn.com/hu.svg" },
+      { country: "IS", image: "https://flagcdn.com/is.svg" },
+      { country: "IN", image: "https://flagcdn.com/in.svg" },
+      { country: "ID", image: "https://flagcdn.com/id.svg" },
+      { country: "IR", image: "https://flagcdn.com/ir.svg" },
+      { country: "IQ", image: "https://flagcdn.com/iq.svg" },
+      { country: "IE", image: "https://flagcdn.com/ie.svg" },
+      { country: "IL", image: "https://flagcdn.com/il.svg" },
+      { country: "IT", image: "https://flagcdn.com/it.svg" },
+      { country: "JM", image: "https://flagcdn.com/jm.svg" },
+      { country: "JP", image: "https://flagcdn.com/jp.svg" },
+      { country: "JO", image: "https://flagcdn.com/jo.svg" },
+      { country: "KZ", image: "https://flagcdn.com/kz.svg" },
+      { country: "KE", image: "https://flagcdn.com/ke.svg" },
+      { country: "KI", image: "https://flagcdn.com/ki.svg" },
+      { country: "KR", image: "https://flagcdn.com/kr.svg" },
+      { country: "KW", image: "https://flagcdn.com/kw.svg" },
+      { country: "KG", image: "https://flagcdn.com/kg.svg" },
+      { country: "LA", image: "https://flagcdn.com/la.svg" },
+      { country: "LV", image: "https://flagcdn.com/lv.svg" },
+      { country: "LB", image: "https://flagcdn.com/lb.svg" },
+      { country: "LS", image: "https://flagcdn.com/ls.svg" },
+      { country: "LR", image: "https://flagcdn.com/lr.svg" },
+      { country: "LY", image: "https://flagcdn.com/ly.svg" },
+      { country: "LI", image: "https://flagcdn.com/li.svg" },
+      { country: "LT", image: "https://flagcdn.com/lt.svg" },
+      { country: "LU", image: "https://flagcdn.com/lu.svg" },
+      { country: "MK", image: "https://flagcdn.com/mk.svg" },
+      { country: "MG", image: "https://flagcdn.com/mg.svg" },
+      { country: "MW", image: "https://flagcdn.com/mw.svg" },
+      { country: "MY", image: "https://flagcdn.com/my.svg" },
+      { country: "MV", image: "https://flagcdn.com/mv.svg" },
+      { country: "ML", image: "https://flagcdn.com/ml.svg" },
+      { country: "MT", image: "https://flagcdn.com/mt.svg" },
+      { country: "MH", image: "https://flagcdn.com/mh.svg" },
+      { country: "MR", image: "https://flagcdn.com/mr.svg" },
+      { country: "MU", image: "https://flagcdn.com/mu.svg" },
+      { country: "MX", image: "https://flagcdn.com/mx.svg" },
+      { country: "FM", image: "https://flagcdn.com/fm.svg" },
+      { country: "MD", image: "https://flagcdn.com/md.svg" },
+      { country: "MC", image: "https://flagcdn.com/mc.svg" },
+      { country: "MN", image: "https://flagcdn.com/mn.svg" },
+      { country: "ME", image: "https://flagcdn.com/me.svg" },
+      { country: "MA", image: "https://flagcdn.com/ma.svg" },
+      { country: "MZ", image: "https://flagcdn.com/mz.svg" },
+      { country: "MM", image: "https://flagcdn.com/mm.svg" },
+      { country: "NA", image: "https://flagcdn.com/na.svg" },
+      { country: "NR", image: "https://flagcdn.com/nr.svg" },
+      { country: "NP", image: "https://flagcdn.com/np.svg" },
+      { country: "NL", image: "https://flagcdn.com/nl.svg" },
+      { country: "NZ", image: "https://flagcdn.com/nz.svg" },
+      { country: "NI", image: "https://flagcdn.com/ni.svg" },
+      { country: "NE", image: "https://flagcdn.com/ne.svg" },
+      { country: "NG", image: "https://flagcdn.com/ng.svg" },
+      { country: "NO", image: "https://flagcdn.com/no.svg" },
+      { country: "OM", image: "https://flagcdn.com/om.svg" },
+      { country: "PK", image: "https://flagcdn.com/pk.svg" },
+      { country: "PW", image: "https://flagcdn.com/pw.svg" },
+      { country: "PA", image: "https://flagcdn.com/pa.svg" },
+      { country: "PG", image: "https://flagcdn.com/pg.svg" },
+      { country: "PY", image: "https://flagcdn.com/py.svg" },
+      { country: "PE", image: "https://flagcdn.com/pe.svg" },
+      { country: "PH", image: "https://flagcdn.com/ph.svg" },
+      { country: "PL", image: "https://flagcdn.com/pl.svg" },
+      { country: "PT", image: "https://flagcdn.com/pt.svg" },
+      { country: "QA", image: "https://flagcdn.com/qa.svg" },
+      { country: "RO", image: "https://flagcdn.com/ro.svg" },
+      { country: "RU", image: "https://flagcdn.com/ru.svg" },
+      { country: "RW", image: "https://flagcdn.com/rw.svg" },
+      { country: "KN", image: "https://flagcdn.com/kn.svg" },
+      { country: "LC", image: "https://flagcdn.com/lc.svg" },
+      { country: "VC", image: "https://flagcdn.com/vc.svg" },
+      { country: "WS", image: "https://flagcdn.com/ws.svg" },
+      { country: "SM", image: "https://flagcdn.com/sm.svg" },
+      { country: "ST", image: "https://flagcdn.com/st.svg" },
+      { country: "SA", image: "https://flagcdn.com/sa.svg" },
+      { country: "SN", image: "https://flagcdn.com/sn.svg" },
+      { country: "RS", image: "https://flagcdn.com/rs.svg" },
+      { country: "SC", image: "https://flagcdn.com/sc.svg" },
+      { country: "SL", image: "https://flagcdn.com/sl.svg" },
+      { country: "SG", image: "https://flagcdn.com/sg.svg" },
+      { country: "SK", image: "https://flagcdn.com/sk.svg" },
+      { country: "SI", image: "https://flagcdn.com/si.svg" },
+      { country: "SB", image: "https://flagcdn.com/sb.svg" },
+      { country: "SO", image: "https://flagcdn.com/so.svg" },
+      { country: "ZA", image: "https://flagcdn.com/za.svg" },
+      { country: "ES", image: "https://flagcdn.com/es.svg" },
+      { country: "LK", image: "https://flagcdn.com/lk.svg" },
+      { country: "SD", image: "https://flagcdn.com/sd.svg" },
+      { country: "SR", image: "https://flagcdn.com/sr.svg" },
+      { country: "SZ", image: "https://flagcdn.com/sz.svg" },
+      { country: "SE", image: "https://flagcdn.com/se.svg" },
+      { country: "CH", image: "https://flagcdn.com/ch.svg" },
+      { country: "SY", image: "https://flagcdn.com/sy.svg" },
+      { country: "TW", image: "https://flagcdn.com/tw.svg" },
+      { country: "TJ", image: "https://flagcdn.com/tj.svg" },
+      { country: "TZ", image: "https://flagcdn.com/tz.svg" },
+      { country: "TH", image: "https://flagcdn.com/th.svg" },
+      { country: "TL", image: "https://flagcdn.com/tl.svg" },
+      { country: "TG", image: "https://flagcdn.com/tg.svg" },
+      { country: "TO", image: "https://flagcdn.com/to.svg" },
+      { country: "TT", image: "https://flagcdn.com/tt.svg" },
+      { country: "TN", image: "https://flagcdn.com/tn.svg" },
+      { country: "TR", image: "https://flagcdn.com/tr.svg" },
+      { country: "TM", image: "https://flagcdn.com/tm.svg" },
+      { country: "TV", image: "https://flagcdn.com/tv.svg" },
+      { country: "UG", image: "https://flagcdn.com/ug.svg" },
+      { country: "UA", image: "https://flagcdn.com/ua.svg" },
+      { country: "AE", image: "https://flagcdn.com/ae.svg" },
+      { country: "GB", image: "https://flagcdn.com/gb.svg" },
+      { country: "US", image: "https://flagcdn.com/us.svg" },
+      { country: "UY", image: "https://flagcdn.com/uy.svg" },
+      { country: "UZ", image: "https://flagcdn.com/uz.svg" },
+      { country: "VU", image: "https://flagcdn.com/vu.svg" },
+      { country: "VA", image: "https://flagcdn.com/va.svg" },
+      { country: "VE", image: "https://flagcdn.com/ve.svg" },
+      { country: "VN", image: "https://flagcdn.com/vn.svg" },
+      { country: "YE", image: "https://flagcdn.com/ye.svg" },
+      { country: "ZM", image: "https://flagcdn.com/zm.svg" },
+      { country: "ZW", image: "https://flagcdn.com/zw.svg" }
+    ];
+
+    let score = 0;
+    let streak = 0;
+    let timeLeft = 30;
+    let timer;
+    let playerName = '';
+    let currentFlag;
+    let leaderboard = JSON.parse(localStorage.getItem('flagselLeaderboard')) || [];
+    let playerScores = {};
+
+    function updateFlag() {
+      currentFlag = flags[Math.floor(Math.random() * flags.length)];
+      document.querySelector("#flag img").src = currentFlag.image;
+      document.getElementById("guess").value = "";
+      document.getElementById("feedback").textContent = "";
+    }
+
+    function updateLeaderboard() {
+      leaderboard.push(score);
+      leaderboard.sort((a, b) => b - a);
+      if (leaderboard.length > 10) leaderboard = leaderboard.slice(0, 10);
+      localStorage.setItem("flagselLeaderboard", JSON.stringify(leaderboard));
+      const body = document.getElementById("leaderboard-body");
+      body.innerHTML = "";
+      leaderboard.forEach((s, i) => {
+        body.innerHTML += `<tr><td>${i + 1}</td><td>${s}</td></tr>`;
+      });
+    }
+
+    function updatePlayerScores() {
+      const list = document.getElementById("scores");
+      list.innerHTML = "";
+      for (const [name, val] of Object.entries(playerScores)) {
+        const li = document.createElement("li");
+        li.textContent = `${name}: ${val}`;
+        list.appendChild(li);
+      }
+    }
+
+    function resetTimer() {
+      timeLeft = 30;
+      document.getElementById("timer").textContent = `Time left: ${timeLeft}s`;
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").textContent = `Time left: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          streak = 0;
+          document.getElementById("feedback").textContent = `Time's up! The answer was ${currentFlag.country.toUpperCase()}.`;
+          setTimeout(() => {
+            updateFlag();
+            resetTimer();
+          }, 1500);
+        }
+      }, 1000);
+    }
+
+    function startGame() {
+      playerName = document.getElementById("player").value.trim() || "Player";
+      document.getElementById("game").style.display = "block";
+      score = 0;
+      streak = 0;
+      playerScores[playerName] = 0;
+      document.getElementById("score").textContent = "Score: 0";
+      updateFlag();
+      updatePlayerScores();
+      resetTimer();
+    }
+
+    function submitGuess() {
+      const guess = document.getElementById("guess").value.trim().toUpperCase();
+      const correct = guess === currentFlag.country;
+      if (correct) {
+        let added = Math.floor(Math.random() * 51) + 50;
+        streak++;
+        if (streak > 1) added += 25;
+        score += added;
+        document.getElementById("feedback").textContent = `Correct! +${added} points`;
+      } else {
+        document.getElementById("feedback").textContent = `Wrong! It was ${currentFlag.country}`;
+        streak = 0;
+      }
+      playerScores[playerName] = score;
+      updatePlayerScores();
+      document.getElementById("score").textContent = `Score: ${score}`;
+      clearInterval(timer);
+      setTimeout(() => {
+        updateFlag();
+        resetTimer();
+      }, 1500);
+    }
+
+    document.getElementById("start").addEventListener("click", startGame);
+    document.getElementById("submit").addEventListener("click", submitGuess);
+    window.addEventListener("beforeunload", updateLeaderboard);
+    window.onload = updateLeaderboard;
+  </script>
+</body>
+</html>
